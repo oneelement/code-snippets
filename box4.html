@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Box</title>
+        <meta name="description" content="">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="text/javascript" src="box2d.min.js"></script>
+        <style type="text/css">
+
+
+        </style>
+    </head>
+     <body onload="">
+
+        <canvas id="canvas" width="540" height="940" style="background-color:#008000;" ></canvas>
+        <script>
+
+        window.requestAnimFrame = (function(){
+          return  window.requestAnimationFrame       || 
+                  window.webkitRequestAnimationFrame || 
+                  window.mozRequestAnimationFrame    || 
+                  window.oRequestAnimationFrame      || 
+                  window.msRequestAnimationFrame     || 
+                  function(/* function */ callback, /* DOMElement */ element){
+                    window.setTimeout(callback, 1000 / 60);
+                  };
+        })();
+
+        // Define the canvas
+        var canvaselem = document.getElementById("canvas");
+        var context = canvaselem.getContext("2d");
+        var canvaswidth = canvaselem.width-0;
+        var canvasheight = canvaselem.height-0;
+
+        var world;
+
+        
+
+        function init(){
+
+            var   b2Vec2 = Box2D.Common.Math.b2Vec2
+                 , b2BodyDef = Box2D.Dynamics.b2BodyDef
+                 , b2Body = Box2D.Dynamics.b2Body
+                 , b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+                 , b2Fixture = Box2D.Dynamics.b2Fixture
+                 , b2World = Box2D.Dynamics.b2World
+                 , b2MassData = Box2D.Collision.Shapes.b2MassData
+                 , b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+                 , b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+                 , b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+                 , b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef
+                   ;
+
+            // Define the world
+            var gravity = new b2Vec2(0, 0);
+            var doSleep = true;
+            world = new b2World(gravity, doSleep);
+
+            
+
+            //create ground
+            var fixDef = new b2FixtureDef;
+            fixDef.density = .5;
+            fixDef.friction = 0.4;
+            fixDef.restitution = 1;
+
+
+            var bodyDef = new b2BodyDef;
+            bodyDef.type = b2Body.b2_staticBody;
+            fixDef.shape = new b2PolygonShape;
+            fixDef.shape.SetAsBox(canvaswidth/2,2);
+            bodyDef.position.Set(canvaswidth/2, 0);
+            world.CreateBody(bodyDef).CreateFixture(fixDef);
+            bodyDef.position.Set(canvaswidth/2, canvasheight);
+            world.CreateBody(bodyDef).CreateFixture(fixDef);
+            bodyDef.position.Set(0, canvasheight/2);
+            fixDef.shape.SetAsBox(2,canvasheight/2);        
+            world.CreateBody(bodyDef).CreateFixture(fixDef);
+            bodyDef.position.Set(canvaswidth, canvasheight/2);
+            world.CreateBody(bodyDef).CreateFixture(fixDef);
+
+            //add fixed circle to simulate player, some overkill here
+            var bodyDef = new b2BodyDef;
+            var fixDef = new b2FixtureDef;
+            fixDef.density = .5;
+            fixDef.friction = 0.4;
+            fixDef.restitution = 1;
+            bodyDef.type = b2Body.b2_staticBody;
+            bodyDef.position.Set(canvaswidth/4, canvasheight/4); //position in center
+            bodyDef.userData = "Player";
+            fixDef.shape = new b2CircleShape(2);
+            world.CreateBody(bodyDef).CreateFixture(fixDef);
+
+            //add dynamic circle to simulate ball
+
+        };
+
+        function update() {
+           world.Step(
+                 1 / 60   //frame-rate
+              ,  10       //velocity iterations
+              ,  10       //position iterations
+           );
+           world.DrawDebugData();
+           world.ClearForces();             
+
+           requestAnimFrame(update);
+        }; // update()
+      
+        init();
+        requestAnimFrame(update);
+
+
+
+
+        </script>
+
+    </body>
+</html>

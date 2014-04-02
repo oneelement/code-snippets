@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+	<head></head>
+	<body>
+		<canvas id="canvas" width="800" height="800" style="background-color:#cc00cc;"></canvas>
+
+		<script>
+			var ctx = canvas.getContext("2d");     
+			ctx.beginPath();
+
+			//polygon1--- usually the outside polygon, must be clockwise
+			ctx.moveTo(0, 0);
+			ctx.lineTo(200, 0);
+			ctx.lineTo(200, 200);
+			ctx.lineTo(0, 200);
+			ctx.lineTo(0, 0);
+			ctx.closePath();
+
+			var radius = 40;
+
+			//polygon2 --- usually hole,must be counter-clockwise 
+			ctx.moveTo(10, 10);
+			ctx.arcTo(10, 10, 10,100, radius);
+			ctx.arcTo(10, 100, 100, 100, radius);
+			ctx.arcTo(100, 100, 100, 10, radius);
+			ctx.arcTo(100, 10, 10, 10, radius);
+			ctx.closePath();
+
+
+
+			//  add as many holes as you want
+			ctx.fillStyle = "#FF0000";
+			ctx.strokeStyle = "rgba(0.5,0.5,0.5,0.5)";
+			ctx.lineWidth = 1;
+			ctx.fill();
+			ctx.stroke();
+		</script>
+	</body>
+</html>

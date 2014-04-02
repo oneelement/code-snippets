@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Playing with Three</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style type="text/css">
+            body {
+                padding: 0;
+                margin: 0;
+                background: #333;
+            }
+            #container {
+                margin: 0 auto;  
+                height: 100%;
+                width: 100%;             
+            }
+            canvas { width: 100%; height: 100%;}
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+        <script src="js/three.min.js"></script>
+        <script src="js/threex.keyboardstate.js"></script>
+        
+    </head>
+   <body>
+
+        <div id="container"></div>    
+
+        <script type="text/javascript">
+
+            //setup keyboard
+
+            var keyboard = new THREEx.KeyboardState();
+
+            // set the scene size
+            var WIDTH = window.innerWidth,
+                HEIGHT = window.innerHeight;
+
+            // set some camera attributes
+            var VIEW_ANGLE = 45,
+                ASPECT = WIDTH / HEIGHT,
+                NEAR = 0.1,
+                FAR = 20000;
+
+            // get the DOM element to attach to
+            // - assume we've got jQuery to hand
+            var $container = $('#container');
+
+            // create a WebGL renderer, camera
+            // and a scene
+            
+            if (window.WebGLRenderingContext) {
+                var renderer = new THREE.WebGLRenderer();
+            } else {
+                var renderer = new THREE.CanvasRenderer();
+            }
+
+            var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+            var scene = new THREE.Scene();
+
+            // the camera starts at 0,0,0 so pull it back
+            camera.position.z = 800;
+            camera.position.y = 250;
+
+            // start the renderer
+            renderer.setSize(WIDTH, HEIGHT);
+
+            // attach the render-supplied DOM element
+            $container.append(renderer.domElement);
+
+            // create the sphere's material
+            var sphereMaterial = new THREE.MeshLambertMaterial({color: 0xcc0000});
+
+            var cubeMaterial = new THREE.MeshLambertMaterial({color: 0xe55ea2});
+
+            // set up the sphere vars
+            var radius = 50, segments = 24, rings = 24;
+
+            var cubeWidth = 50, cubeHeight = 50, cubeDepth = 50, cubeWidthSegments = 1, cubeHeightSegments = 1, cubeDepthSegments = 1;
+
+            // create a new mesh with sphere geometry -
+            // we will cover the sphereMaterial next!
+            var sphere = new THREE.Mesh(new THREE.SphereGeometry(radius, segments, rings), sphereMaterial);
+            var cube = new THREE.Mesh(new THREE.CubeGeometry(cubeWidth, cubeHeight, cubeDepth, cubeWidthSegments, cubeHeightSegments, cubeDepthSegments), cubeMaterial);
+
+            //set the starting position of the cube in 3D
+            cube.position.set(0, 0, -50);
+
+            // add the sphere to the scene
+            //scene.add(sphere);
+
+            scene.add(cube);
+
+            // and the camera
+            scene.add(camera);
+
+            // create a point light
+            var pointLight = new THREE.PointLight( 0xFFFFFF );
+
+            // set its position
+            pointLight.position.x = 1000;
+            pointLight.position.y = 150;
+            pointLight.position.z = 1130;
+
+            // add to the scene
+            scene.add(pointLight);
+
+            //var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+            //scene.add( light );
+
+            // draw! with loop at 60 frames per second
+
+            function render() {
+                requestAnimationFrame(render);
+                //sphere.rotation.x += 0.1;
+                //sphere.rotation.y += 0.0;
+                var speed = 1.8;
+                if ( keyboard.pressed("up")) {
+                    cube.translateZ(speed);
+                };
+                if ( keyboard.pressed("down")) {
+                    cube.translateZ(speed * -1);
+                };
+                if ( keyboard.pressed("left")) {
+                    cube.translateX(speed * -1);
+                };
+                if ( keyboard.pressed("right")) {
+                    cube.translateX(speed);
+                };
+                
+
+                renderer.render(scene, camera);
+            }
+            render();
+        </script>
+
+</body>
+</html>

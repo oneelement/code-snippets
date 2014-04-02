@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Game Engine</title>
+
+    <style type="text/css">
+
+    .ball {
+        background:red;
+        width:20px;
+        height:20px;
+        border-radius:50%;
+        position:absolute;
+        left:0;
+        top:0;
+        m1argin:-20px 0 0 -20px;
+    }
+
+    </style>
+
+</head>
+
+<body>
+
+    <p>This creates a random number as quickly as the browser/CPU can handle it</p>
+    <p>You would use this to update internal properties of a JS Object, which can also represent a DOM, and update the position on each 'tick'</p>
+
+    <div id="feedback"></div>
+
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+    <script>
+
+    window.requestAnimFrame = (function(){
+        return window.requestAnimationFrame     ||
+            window.webkitRequestAnimationFrame  ||
+            window.mozRequestAnimationFrame     ||
+            function( callback ){
+                window.setTimeout(callback, 1000 / 60);
+            };
+    })();
+
+    app = new function(){
+
+        var me = {},
+            $feedback = $('#feedback'),
+            $document = $(document),
+            ball = {};
+
+        var screen_width = $document.width(),
+            screen_height = $document.height();
+
+        function tick() {
+            ball.update(getRandomPosition());
+            requestAnimationFrame(tick);
+        }
+
+        function getRandomPosition() {
+            return {
+                x: getRandomValue(screen_width),
+                y: getRandomValue(screen_height)
+            }
+        }
+
+        function getRandomValue(val) {
+            return Math.random() * val;
+        }
+
+        me.init = function() {
+            var new_pos = getRandomPosition();
+            ball = new Ball({
+                pos: new_pos
+            });
+            $feedback.html(new_pos);
+            tick();
+        }
+
+        return me;
+
+    }
+
+    function Ball(config) {
+
+        var me = {},
+            $me = $('<div class="ball" />'),
+            cur_pos = config.pos;
+
+        function init() {
+            $('body').append($me);
+        }
+
+        function render() {
+            $me.css({
+                '-webkit-transform': 'translate3d(' + cur_pos.x  + 'px, ' + cur_pos.y + 'px, 0)'
+            })
+        }
+
+        me.update = function(pos) {
+            cur_pos = pos;
+            render();
+        }
+
+        init();
+
+        return me;
+
+    }
+
+    app.init();
+
+    </script>
+
+</body>
+
+</html>

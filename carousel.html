@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Custom Carousel</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <style type="text/css">
+            html, body {
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                width: 960px;
+                margin: 20px auto;
+            }
+            .gg-carousel-wrapper {
+                width: 400px;
+                overflow: hidden;
+                position: relative;
+            }
+            .gg-carousel {
+                padding: 0;
+                margin: 0;
+                position: relative;
+                width: 2000em;
+                transition: all 0.6s ease 0s;
+                left: 0;
+            }
+            .gg-carousel-item {
+                list-style-type: none;
+                float: left;
+
+                margin: 0 10px;
+            }
+
+            .gg-carousel-item img {
+                width: 100%;
+            }
+
+            .gg-carousel-item.first {
+                margin-left: 50px;
+            }
+            .gg-carousel-ind {
+                width: 40px;
+                height: 40px;
+                background: #eee;
+                float: left;
+                margin-right: 10px;
+            }
+            .gg-carousel-ind.active {
+                background: black;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="gg-carousel-wrapper">
+                <ul class="gg-carousel">
+                    <li class="gg-carousel-item first">
+                        <img src="http://placehold.it/300x200"/>
+                    </li>
+                    <li class="gg-carousel-item">
+                        <img src="http://placehold.it/300x200"/>
+                    </li>
+                    <li class="gg-carousel-item">
+                        <img src="http://placehold.it/300x200"/>
+                    </li>
+                    <li class="gg-carousel-item">
+                        <img src="http://placehold.it/300x200"/>
+                    </li>
+                    <li class="gg-carousel-item last">
+                        <img src="http://placehold.it/300x200"/>
+                    </li>
+                </ul>
+
+                <div class="gg-carousel-ind active"></div>
+                <div class="gg-carousel-ind"></div>
+                <div class="gg-carousel-ind"></div>
+                <div class="gg-carousel-ind"></div>
+                <div class="gg-carousel-ind"></div>
+
+                <div class="gg-carousel-next">Next</div>
+                <div class="gg-carousel-prev">Prev</div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="gg-carousel-wrapper">
+                <ul class="gg-carousel">
+                    <li class="gg-carousel-item first">
+                        <img src="http://placehold.it/300x200"/>
+                    </li>
+                    <li class="gg-carousel-item">
+                        <img src="http://placehold.it/300x200"/>
+                    </li>
+                    <li class="gg-carousel-item">
+                        <img src="http://placehold.it/300x200"/>
+                    </li>
+                    <li class="gg-carousel-item">
+                        <img src="http://placehold.it/300x200"/>
+                    </li>
+                    <li class="gg-carousel-item last">
+                        <img src="http://placehold.it/300x200"/>
+                    </li>
+                </ul>
+
+                <div class="gg-carousel-ind active"></div>
+                <div class="gg-carousel-ind"></div>
+                <div class="gg-carousel-ind"></div>
+                <div class="gg-carousel-ind"></div>
+                <div class="gg-carousel-ind"></div>
+
+                <div class="gg-carousel-next">Next</div>
+                <div class="gg-carousel-prev">Prev</div>
+            </div>
+        </div>
+
+
+
+        <script>
+
+            (function ($) {
+     
+                $.fn.ggCarousel = function(options) {
+
+                    $.each(this, function(index, carousel){
+
+                        console.log(this);
+
+                        this.settings = {
+                            carouselItems: $(this).find(".gg-carousel-item"),
+                            carouselIndicators: $(this).find(".gg-carousel-ind")
+                        };
+
+                        var that = this,
+                            leftPos = 0,
+                            indicatorPos = 0,
+                            carouselItemWidth = this.settings.carouselItems.last().outerWidth(true),
+                            carouselItemCount = this.settings.carouselItems.length,
+                            carouselMaxWidth = carouselItemCount * carouselItemWidth;
+
+                        $(this).find(".gg-carousel-next").click(function(){
+                            if (leftPos > ((carouselMaxWidth * -1) + carouselItemWidth)){
+                                leftPos -= carouselItemWidth;
+                                indicatorPos++
+                                $(that).find(".gg-carousel").css("left", leftPos);
+                                that.settings.carouselIndicators.removeClass("active");
+                                that.settings.carouselIndicators.eq(indicatorPos).addClass("active");
+                            };                
+                        });
+                        $(this).find(".gg-carousel-prev").click(function(){               
+                            if (leftPos < 0) {
+                                leftPos += carouselItemWidth;
+                                indicatorPos--
+                                $(that).find(".gg-carousel").css("left", leftPos);
+                                that.settings.carouselIndicators.removeClass("active");
+                                that.settings.carouselIndicators.eq(indicatorPos).addClass("active");
+                            }; 
+                        });
+
+                    });
+
+
+                };
+
+             
+            }(jQuery));
+
+            $(".gg-carousel-wrapper").ggCarousel();
+
+        </script>
+
+
+    </body>
+</html>

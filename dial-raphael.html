@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Raphael Example</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style type="text/css">
+
+            
+
+        </style>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+        <script src="raphael.min.js"></script>
+        <script src="raphael.dropshadow.js"></script>
+
+    </head>
+    <body>
+
+        <div id="holder"></div>
+
+        <div id="dial2"></div>
+
+        <div id="canvas"></div>
+
+   
+
+        <script>
+
+        var amount = 50,
+            arcCentre = { x: 200, y: 200 },
+            arcRadius = 100,
+            arcMin = 1,
+            baseRotation = -180, // this starts the arc from a different point
+		    circleRatio = 360/360, // I found this helpful as my arc is never a full circle
+		    maxValue = 1000; // arbitrary  ;
+
+		var paper = Raphael("canvas", 400, 400);
+
+		paper.customAttributes.arc = function (xloc, yloc, value, total, R) {
+		    var alpha = 360 / total * value,
+		        a = (90 - alpha) * Math.PI / 180,
+		        x = xloc + R * Math.cos(a),
+		        y = yloc - R * Math.sin(a),
+		        path;
+		    if (total == value) {
+		        path = [
+		            ["M", xloc, yloc - R],
+		            ["A", R, R, 0, 1, 1, xloc - 0.01, yloc - R]
+		        ];
+		    } else {
+		        path = [
+		            ["M", xloc, yloc - R],
+		            ["A", R, R, 0, +(alpha > 180), 1, x, y]
+		        ];
+		    }
+		    return {
+		        path: path
+		    };
+		};
+
+		paper.customAttributes.segment = function (x, y, r, a1, a2) {
+            var flag = (a2 - a1) > 180,
+                clr = (a2 - a1) / 360;
+            a1 = (a1 % 360) * Math.PI / 180;
+            a2 = (a2 % 360) * Math.PI / 180;
+            return {
+                path: [["M", x, y], ["l", r * Math.cos(a1), r * Math.sin(a1)], ["A", r, r, 0, +flag, 1, x + r * Math.cos(a2), y + r * Math.sin(a2)], ["z"]],
+                fill: "hsb(" + clr + ", .75, .8)"
+            };
+        };
+
+		//var outer_arc = paper.path().attr({"stroke": "#000000","stroke-width": 125,arc: [arcCentre.x, arcCentre.y, 50, 100, arcRadius]}).transform('r'+ baseRotation + ',' + arcCentre.x + ',' + arcCentre.y);
+
+		var base_arc = paper.path()
+			.attr({
+		    	"stroke": "#ffffff",
+		    	"stroke-width": 20,
+		    	fill: "#fe8c3e",
+		    	arc: [arcCentre.x, arcCentre.y, 50, 100, arcRadius]
+			})
+			.transform('r'+ baseRotation + ',' + arcCentre.x + ',' + arcCentre.y);
+
+		//make an arc at 50,50 with a radius of 30 that grows from 0 to 40 of 100 with a bounce
+		var my_arc = paper.path()
+			.attr({
+		    	"stroke": "#ffffff",
+		    	"stroke-width": 20,
+		    	fill: "#83ae51",
+		    	arc: [arcCentre.x, arcCentre.y, arcMin, 100, arcRadius]
+			})
+			.transform('r'+ baseRotation + ',' + arcCentre.x + ',' + arcCentre.y);
+
+		// set a new value
+		var newValue = 300; // pick your new value
+
+		// convert value to ratio of the arc to complete
+		var ratio = newValue / maxValue;
+
+		console.log(ratio);
+
+		var newLevelValue = Math.max(arcMin, ratio * 100 * circleRatio);
+
+		console.log(newLevelValue);
+
+		//base_arc.animate({arc: [arcCentre.x, arcCentre.y, newLevelValue, 100, arcRadius]});
+
+		my_arc.animate({
+		    arc: [arcCentre.x, arcCentre.y, newLevelValue, 100, arcRadius]
+		}, 0, "linear");
+
+
+        </script>
+
+        <script type="text/javascript">
+            window.onload = function () {
+                var r = Raphael("holder");
+
+                var amount = 50,
+	            arcCentre = { x: 200, y: 200 },
+	            arcRadius = 100,
+	            arcMin = 1,
+	            dialPos = 90,
+	            baseRotation = 90; // this starts the arc from a different point; // arbitrary  ;
+
+                r.customAttributes.segment = function (x, y, r, a1, a2) {
+                    var flag = (a2 - a1) > 180;
+                    a1 = (a1 % 360) * Math.PI / 180;
+                    a2 = (a2 % 360) * Math.PI / 180;
+                    return {
+                        path: [["M", x, y], ["l", r * Math.cos(a1), r * Math.sin(a1)], ["A", r, r, 0, +flag, 1, x + r * Math.cos(a2), y + r * Math.sin(a2)], ["z"]]                  
+                        
+                    };
+                };
+
+  
+                r.path().attr({"stroke": "#ffffff",	"stroke-width": 4, fill: "#fe8c3e", segment: [200, 200, 101, 0, 180]}).transform('r'+ baseRotation + ',' + arcCentre.x + ',' + arcCentre.y).glow({ color: '#ccc', width:1, offsetx:-1 });
+
+                r.path().attr({"stroke": "#ffffff",	"stroke-width": 1, fill: "#83ae51",segment: [200, 200, 100, 0, 0]}).transform('r'+ baseRotation + ',' + arcCentre.x + ',' + arcCentre.y).animate({segment: [200, 200, 100, 0, dialPos]}, 1000, "linear");
+
+                var hole = r.path().attr({"stroke": "#ffffff",	"stroke-width": 2, fill: "#ffffff", segment: [200, 200, 20, 0, 180]}).transform('r'+ baseRotation + ',' + arcCentre.x + ',' + arcCentre.y);
+
+                
+
+                var circle = r.circle(200, 200, 12).attr({"stroke": "#bfbebe",	"stroke-width": 1, fill: "#cccccc"}).glow({ color: '#aaa', width:1, offsety: 1 });    
+
+                var triangle =  r.path("M195,200 L205,200 L200,300 z").attr({"stroke": "#bfbebe",	"stroke-width": 0, fill: "#cccccc"}).animate({transform: 'r'+ dialPos + ',' + arcCentre.x + ',' + arcCentre.y}, 1000, "linear").animate({transform: 'r'+ dialPos + ',' + arcCentre.x + ',' + arcCentre.y}, 1000, "linear");
+
+    //            function animate(ms) {
+    //                var start = 0,
+    //                    val;
+    //                for (i = 0; i < ii; i++) {
+    //                    val = 360 / total * data[i];
+    //                    paths[i].animate({segment: [200, 200, 150, start, start += val]}, ms || 0, "linear");
+    //                    paths[i].angle = start - val / 2;
+    //                }
+    //            }
+//
+    //            var data = [180, 180],
+    //                paths = r.set(),
+    //                total,
+    //                start,
+    //                bg = r.circle(200, 200, 0).attr({stroke: "#fff", "stroke-width": 4});
+    //            data = data.sort(function (a, b) { return b - a;});
+//
+    //            total = 0;
+    //            for (var i = 0, ii = data.length; i < ii; i++) {
+    //                total += data[i];
+    //            }
+    //            start = 0;
+    //            for (i = 0; i < ii; i++) {
+    //                var val = 360 / total * data[i];
+    //                (function (i, val) {
+    //                    paths.push(r.path().attr({segment: [200, 200, 1, start, start + val], stroke: "#fff"}).click(function () {
+    //                        total += data[i];
+    //                        data[i] *= 2;
+    //                        animate();
+    //                    }));
+    //                })(i, val);
+    //                start += val;
+    //            }
+    //            //bg.animate({r: 151}, 1000, "linear");
+    //            //animate(0);
+//
+            };
+        </script>
+
+
+    </body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SVG Heart</title>
+
+		<style>
+
+			#heart {
+                width: 500px;
+                height: 500px;
+                margin: 0 auto;
+                position: relative;
+                top: 200px;
+            }
+
+            img {
+            	width: 500px;
+            }
+
+            svg {
+            	position: absolute !important;
+            }
+
+            .hearts {
+			  stroke-dasharray: 1141;
+			  stroke-dashoffset: 1141;
+			  animation: dash 2s ease-out forwards;
+			}
+
+			@keyframes dash {
+			  to {
+			    stroke-dashoffset: 200;
+			  }
+			}
+
+		</style>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>		
+		<script src="../raphael.min.js"></script>
+		
+	</head>
+	<body>
+
+		<div id="heart">
+			<img src="mountain.jpg"/>
+		</div>
+
+
+		<script>
+
+			var heartDiv = document.getElementById('heart');
+		 	var width = heartDiv.offsetWidth;
+		 	var height = heartDiv.offsetHeight;
+		 	var scale = 0.5; 	
+		 	var paper = Raphael(heartDiv, width, height);
+
+		 	//var background = paper.rect(0, 0, width, height).attr({fill: '#f2f2f2', stroke: '#000', 'stroke-width': 0});
+
+		 	var heartVector = "M390.33,116.888c0.103,47.09-30.416,69.288-55.299,96.049" +
+			"s-84.406,90.237-84.406,90.237c-12.449,13.166-30.934,40.672-46.569,40.748h-0.109c-15.635-0.076-34.119-27.582-46.568-40.748" +
+			"c-31.266-33.072-54.313-57.842-84.406-90.237c-24.715-26.6-54.557-48.201-55.303-96.049c-0.854-55.012,39.105-97.534,90.23-98.959" +
+			"c37.278-1.039,57.328,15.456,74.975,36.263c0,0,14.072,17.729,21.125,17.729s21.309-17.94,21.309-17.94s28.42-39.363,74.795-36.051" +
+			"C351.079,21.569,390.191,53.372,390.33,116.888z";
+
+			//var plotBase = paper.path(heartVector).attr({fill: '#b5b5b5', 'fill-opacity': '0.0', stroke: '#111', 'stroke-opacity': '0.3', 'stroke-width': 25}).scale(scale, scale, 50, 50);
+			var plot = paper.path(heartVector).attr({fill: '#b5b5b5', 'fill-opacity': '0.0', stroke: '#676', 'stroke-width': 20, 'stroke-linejoin': "round", 'stroke-miterlimit':1}).scale(scale, scale, 0, 0);
+
+			plot.node.setAttribute("class", "heart");
+
+			plot.node.setAttribute("stroke-linejoin", "round");
+
+			plot.node.setAttribute("stroke-miterlimit", 10);
+
+			var path = document.querySelector('.heart');
+
+			var length = path.getTotalLength();
+
+			var percent = 100;
+
+			var calc = ((100 - percent) / 100 ) * length;
+
+			$('.heart').css('stroke-dasharray', length).css('stroke-dashoffset', length).animate({'stroke-dashoffset': calc}, 7000, 'linear');
+
+			console.log(path.getTotalLength());
+			
+		</script>
+
+	</body>
+</html>

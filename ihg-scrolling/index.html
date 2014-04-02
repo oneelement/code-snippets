@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html manifest="ihg.appcache">
+	<head>
+		<title>IHG Scrolling Example</title>
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<style>
+			html, body {
+				padding: 0;
+				margin: 0;		
+				background: #c4c4c4;
+			}
+			div, img {
+				padding: 0;
+				margin: 0;	
+			}
+
+			.container {
+				position: relative;
+			}
+
+			div {
+				width: 100%;
+				position: static;
+			}
+			div img {
+				width: 100%;
+				display: block;
+			}
+			#header {
+				position: fixed;
+				top: 0;
+			}
+			#content1 {
+				margin-top: 75px;
+			}
+
+			#header2.stick {
+				position: fixed;
+				top: 0;
+			}
+
+			#header3.stick {
+				position: fixed;
+				top: 0;
+			}
+
+			#header.fluid, #header2.fluid, #header3.fluid {
+				position: absolute;
+				bottom: 0;
+				top: inherit !important;
+			}
+
+
+		</style>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		
+	</head>
+	<body>
+		<div class="container">
+			<div id="header">
+				<img src="header.png"/>
+			</div>
+			<div id="content1">
+				<img src="content.png"/>
+			</div>
+		</div>
+		
+		<div id="header2">
+			<img src="header2.png"/>
+		</div>
+		<div id="content2">
+			<img src="content2.png"/>
+		</div>
+		<div id="header3">
+			<img src="header3.png"/>
+		</div>
+		<div id="content3">
+			<img src="content2.png"/>
+		</div>
+
+		<script>
+
+
+
+			$.fn.redraw = function(){
+				$(this).each(function(){
+					$(this).hide().show()
+					var redraw = this.offsetHeight;
+				});
+				return this;
+			};
+
+			var win = $(window);
+			win.scrollTop(0);
+
+			var head1 = $('#header');
+			var head2 = $('#header2');
+			var head3 = $('#header3');
+
+			var content1 = $('#content1');
+			var content2 = $('#content2');
+			var content3 = $('#content3');
+
+			var headStick = true;
+			var head2Stick = true;
+
+			var touchStartPos = 0;
+			var scrollPosY = 0;
+			var prevMovedY = 0;
+
+			win.on('touchstart', function(e){
+				touchStartPos = e.originalEvent.pageY;
+			});
+
+			function paint() {
+				$('body').hide().show();
+			}
+
+			win.on('scroll touchmove', function(e){
+
+				//e.preventDefault();
+
+		//		//console.log(touchStartPos);
+//
+		//		//console.log($('body'));
+//
+		//		//$('body').css("z-index", "1");
+//
+		//		//$('body').css("z-index", "0");
+//
+		//		//$(body).css("z-index", "5");
+		//		
+		//		//console.log(e);
+		//		//console.log(this.scrollY);
+		//		//console.log(e.originalEvent.touches[0].screenY);
+				var scrollPos = $(this).scrollTop();
+//
+		//		//console.log('touchStartPos ' + touchStartPos);
+//
+		//		//console.log(e.originalEvent.touches[0]);
+//
+//
+		//		console.log(e.originalEvent.touches[0].screenY - prevMovedY);
+		//		//console.log(e.originalEvent.pageY);
+//
+		//		var movedY = touchStartPos - (e.originalEvent.touches[0].screenY - prevMovedY);
+//
+		//		console.log('movedY ' + movedY);
+//
+		//		//touchStartPos = touchStartPos - movedY;
+//
+		//		//console.log(scrollPos);
+//
+		//		//console.log(scrollPosY + movedY);
+//
+		//		$(this).scrollTop(movedY);
+//
+		//		prevMovedY = movedY;
+//
+		//		//scrollPosY = scrollPosY + movedY;
+//
+		//		//touchStartPos = touchStartPos - movedY;
+
+
+				paint();
+
+				//Sticky Header 2
+				if (scrollPos >= content1.height() + head1.height()) {
+					if (!head2.hasClass('stick')) {
+						head2.addClass('stick');	
+						content2.css('margin-top', head2.height());		
+									
+					}					
+				} else {
+					if (head2.hasClass('stick')) {
+						head2.removeClass('stick');
+						content2.css('margin-top', 0);
+					}
+				}
+
+				if (scrollPos >= content1.height()) {	
+					if (headStick == true) {
+						head1.addClass('fluid');
+						headStick = false;
+					}															
+				} else {
+					if (headStick == false) {
+						head1.removeClass('fluid').css('top', 0);
+						headStick = true;
+					}
+				}
+
+				//Sticky Header 3
+				if (scrollPos >= (content1.height() + content2.height() + head2.height() + head1.height())) {
+					if (!head3.hasClass('stick')) {
+						head3.addClass('stick');
+						content3.css('margin-top', head3.height());	
+					}					
+				} else {
+					if (head3.hasClass('stick')) {
+						head3.removeClass('stick');
+						content3.css('margin-top', 0);	
+					}
+				}
+
+				if (scrollPos >= (content1.height() + content2.height() + head1.height())) {	
+					if (head2Stick == true) {
+						head2.addClass('fluid').css('top', (content1.height() + content2.height() + head1.height()));
+						head2Stick = false;
+					}															
+				} else {
+					if (head2Stick == false) {
+						head2.removeClass('fluid').css('top', 0);
+						head2Stick = true;
+					}
+				}
+				
+			});
+			
+		</script>
+	</body>
+</html>

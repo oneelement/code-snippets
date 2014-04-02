@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Box</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="box2d.min.js"></script>
+        <style type="text/css">
+
+
+        </style>
+    </head>
+    <body class="">
+
+        <canvas id="c" width="540" height="940" style="background-color:#008000;" ></canvas>
+        <script>
+
+            window.requestAnimFrame = (function(){
+              return  window.requestAnimationFrame       || 
+                      window.webkitRequestAnimationFrame || 
+                      window.mozRequestAnimationFrame    || 
+                      window.oRequestAnimationFrame      || 
+                      window.msRequestAnimationFrame     || 
+                      function(/* function */ callback, /* DOMElement */ element){
+                        window.setTimeout(callback, 1000 / 60);
+                      };
+            })();
+
+            var canvas = document.getElementById("c");
+            var ctx = canvas.getContext("2d"); // this is a canvas thing to draw 2d objects    
+            var world;
+            var canvaswidth = canvas.width-0;
+            var canvasheight = canvas.height-0;
+
+            var centerX = canvas.width / 2;
+            var centerY = canvas.height / 2;
+
+            var radius = 70;
+
+            var entityStates;
+
+            
+
+             function init() {
+                   var   b2Vec2 = Box2D.Common.Math.b2Vec2
+                    , b2BodyDef = Box2D.Dynamics.b2BodyDef
+                    , b2Body = Box2D.Dynamics.b2Body
+                    , b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+                    , b2Fixture = Box2D.Dynamics.b2Fixture
+                    , b2World = Box2D.Dynamics.b2World
+                    , b2MassData = Box2D.Collision.Shapes.b2MassData
+                    , b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+                    , b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+                    , b2DebugDraw = Box2D.Dynamics.b2DebugDraw;
+                 
+                   world = new b2World(
+                        new b2Vec2(0, 0)    //gravity
+                      ,  true                 //allow sleep
+                   );
+                   
+                   var SCALE = 30;
+                 
+                   var fixDef = new b2FixtureDef;
+                   fixDef.density = 1.0;
+                   fixDef.friction = 222222.5;
+                   fixDef.restitution = 0.5;
+                 
+            //      var bodyDef = new b2BodyDef;
+            //    
+            //      //create ground
+            //      bodyDef.type = b2Body.b2_staticBody;
+            //      
+            //      // positions the center of the object (not upper left!)
+            //      bodyDef.position.x = canvas.width / 2 / SCALE;
+            //      bodyDef.position.y = (canvas.height / SCALE) - 1;
+            //      
+            //      fixDef.shape = new b2PolygonShape;
+            //      
+            //      // half width, half height. eg actual height here is 1 unit
+            //      fixDef.shape.SetAsBox((200 / SCALE) / 2, 1.5 / 2);
+            //      world.CreateBody(bodyDef).CreateFixture(fixDef);
+
+                   var bodyDef = new b2BodyDef;
+                  bodyDef.type = b2Body.b2_staticBody;
+                  fixDef.shape = new b2PolygonShape;
+                  fixDef.shape.SetAsBox(canvaswidth / 2 / SCALE, 0);
+                  
+                  bodyDef.position.Set(canvaswidth / 2 /  SCALE, 0);
+                  world.CreateBody(bodyDef).CreateFixture(fixDef);
+                  
+                  bodyDef.position.Set(canvaswidth / 2 / SCALE, canvasheight / SCALE);
+                  world.CreateBody(bodyDef).CreateFixture(fixDef);
+                  
+                  bodyDef.position.Set(0, canvasheight/2/ SCALE);                  
+                  fixDef.shape.SetAsBox(0,canvasheight / 2 / SCALE);        
+                  world.CreateBody(bodyDef).CreateFixture(fixDef);
+                  
+                  bodyDef.position.Set(canvaswidth / SCALE, canvasheight / 2 / SCALE);
+                  world.CreateBody(bodyDef).CreateFixture(fixDef);
+
+                  
+
+                  function addObject(object){
+                      console.log(object.id);
+                      var bodyDef = new b2BodyDef;
+                      var fixDef = new b2FixtureDef;
+                      fixDef.density = 1.0;
+                      fixDef.friction = 2220.5;
+                      fixDef.restitution = 0.5;
+                      if (object.type === "b2Body.b2_staticBody"){
+                          bodyDef.type = b2Body.b2_staticBody;
+                      } else {
+                          bodyDef.type = b2Body.b2_dynamicBody;
+                      }                      
+                      bodyDef.userData = object.id;
+                      fixDef.shape = new b2CircleShape(object.radius / SCALE );
+                      bodyDef.position.Set(object.posx / SCALE, object.posy / SCALE);                       
+                      var entity = world.CreateBody(bodyDef).CreateFixture(fixDef);
+                      if (object.id === "ball"){
+                          entity.GetBody().ApplyImpulse(
+                            new b2Vec2(20,50),
+                              entity.GetBody().GetWorldCenter()
+                          );
+                      }
+                  }
+
+                  var initialState = [
+                    {id: "static-circle", type: "b2Body.b2_staticBody", posx: 100, posy: 100, radius: 30},
+                    {id: "ball", type: "b2Body.b2_dynamicBody", posx: 150, posy: 150, radius: 30}
+                  ];
+
+                  entityStates = initialState;
+
+
+                  for (var i = 0; i < initialState.length; i++) {
+                    console.log(initialState[i]);
+                    addObject(initialState[i]);
+                  }
+          
+                 
+          //        //setup debug draw
+          //        var debugDraw = new b2DebugDraw();
+          //        debugDraw.SetSprite(document.getElementById("c").getContext("2d"));
+          //        debugDraw.SetDrawScale(SCALE);
+          //        debugDraw.SetFillAlpha(0.3);
+          //        debugDraw.SetLineThickness(1.0);
+          //        debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+          //        world.SetDebugDraw(debugDraw);
+                 
+                   // restart
+                   //setTimeout(init, 5000);
+            }; // init()
+
+            function draw() {
+              console.log(world);
+              ctx.clearRect(0, 0, canvaswidth, canvasheight);
+              for (var b = world.GetBodyList(); b; b = b.m_next) {
+                if (b.IsActive() && typeof b.GetUserData() !== 'undefined' && b.GetUserData() != null) {
+                  console.log(b);
+                  console.log(b.GetUserData());
+                  console.log(b.GetPosition().x);
+                  console.log(b.GetPosition().y);
+                  console.log(b.GetWorldCenter().x);
+                  console.log(b.GetWorldCenter().y);
+
+                  //ctx.clearRect(0, 0, canvaswidth, canvasheight);
+                  ctx.save();
+                  ctx.strokeStyle = "#CCCCCC";
+                  ctx.fillStyle = "#776666";
+                  ctx.beginPath();
+                  ctx.arc((b.GetPosition().x * 30), (b.GetPosition().y * 30), 30, 0, Math.PI*2, true);
+                  ctx.closePath();
+                  ctx.stroke();
+                  ctx.fill();
+                  ctx.restore();
+                }
+                
+              }
+              //ctx.clearRect(0, 0, canvaswidth, canvasheight);
+              
+            }
+          
+            function update() {
+               world.Step(
+                     1 / 60   //frame-rate
+                  ,  10       //velocity iterations
+                  ,  10       //position iterations
+               );
+               world.DrawDebugData();
+               world.ClearForces();             
+
+               draw();
+               requestAnimFrame(update);
+            }; // update()
+          
+            init();
+            requestAnimFrame(update);
+
+        </script>
+
+    </body>
+</html>

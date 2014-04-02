@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Custom Carousel</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <style type="text/css">
+
+            img { width:25%; height:auto; }
+            img.blur {
+            -webkit-filter: blur(3px); -moz-filter: blur(3px);
+            -o-filter: blur(3px); -ms-filter: blur(3px); 
+            filter: url(#blur); filter: blur(3px);  filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='3');
+            -webkit-transition: .9s -webkit-filter linear;
+            -moz-transition: .9s -moz-filter linear;
+            -o-transition: .9s -o-filter linear;
+            transition: .9s filter linear;
+            }
+            img.blur:hover  { -webkit-filter: blur(0px); -moz-filter: blur(0px); -o-filter: blur(0px); -ms-filter: blur(0px);
+            filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='0'); filter: blur(0px); } 
+        </style>
+    </head>
+    <body class="">
+
+    <div class="footer blur">
+this is some wording
+<img class="blur" src="http://farm1.staticflickr.com/114/271078402_ad78f9dc4b.jpg" alt="Pakistani Woman">
+<img src="http://farm1.staticflickr.com/114/271078402_ad78f9dc4b.jpg" alt="Pakistani Woman">
+</div>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <filter id="blur">
+        <feGaussianBlur stdDeviation="15" />
+    </filter>
+</svg>
+
+    </body>
+</html>
